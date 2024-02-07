@@ -58,4 +58,23 @@ public class ThemeController : ControllerBase
         var books = await _db.GetCollection<Theme>("ThemeCollection").Find(filter).FirstOrDefaultAsync();
         return Ok(books.Books);
     }
+    [HttpGet("GetAllThemes")]
+    public async Task<ActionResult> GetAllThemes()
+    {
+        var themes = await _db.GetCollection<Theme>("ThemeCollection").Find(_ => true).ToListAsync();
+        return Ok(themes);
+    }
+
+    [HttpPut("AddBookToTheme/{themeId}/{bookId}")]
+    public async Task<ActionResult> AddBookToTheme(string themeId, string bookId)
+    {
+
+        var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
+        var bookFilter = Builders<Book>.Filter.Eq(b => b.Id, new ObjectId(bookId));
+        var book = await _db.GetCollection<Book>("BookCollection").Find(bookFilter).FirstOrDefaultAsync();
+        var updateFilter = Builders<Theme>.Update.Push<Book>(p=>p.Books, book);
+        await _db.GetCollection<Theme>("ThemeCollection").UpdateOneAsync(themeFilter, updateFilter);
+        
+        return Ok("Book added to theme!");
+    }
 }
