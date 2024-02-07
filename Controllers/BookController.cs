@@ -23,7 +23,7 @@ public class BookController : ControllerBase
         return Ok("Book created! ID: " + book.Id);
     }
 
-    [HttpGet("GetBook/{id}")]
+    [HttpGet("GetBookById/{id}")]
     public async Task<ActionResult> GetBook(string id)
     {
         var filter = Builders<Book>.Filter.Eq(b => b.Id, new ObjectId(id));
