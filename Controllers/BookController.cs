@@ -1,6 +1,4 @@
 using backend.model;
-using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 
 namespace backend.controllers;
 
@@ -9,8 +7,7 @@ namespace backend.controllers;
 public class BookController : ControllerBase
 {
     private readonly IMongoClient _client;
-    private IMongoDatabase _db;
-    
+    private readonly IMongoDatabase _db;
     
     public BookController(IMongoClient client)
     {

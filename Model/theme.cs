@@ -2,7 +2,7 @@ namespace backend.model;
 
 public class Theme
 {
-    public int Id { get; set; }
+    public ObjectId Id { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
     public string? ImagePath { get; set; }

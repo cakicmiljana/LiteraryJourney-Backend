@@ -1,5 +1,4 @@
 using backend.model;
-using Microsoft.AspNetCore.Mvc;
 
 namespace backend.controllers;
 
@@ -7,9 +6,13 @@ namespace backend.controllers;
 [Route("[controller]")]
 public class ThemeController : ControllerBase
 {
-    ThemeController()
+    
+    private readonly IMongoClient _client;
+    private readonly IMongoDatabase _db;
+    public ThemeController(IMongoClient client)
     {
-        
+        _client = client;
+        _db = _client.GetDatabase("Books");
     }
 
     [HttpPost("CreateTheme")]

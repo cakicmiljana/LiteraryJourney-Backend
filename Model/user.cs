@@ -1,7 +1,7 @@
 namespace backend.model;
 
 public class User {
-    public int Id { get; set; }
+    public ObjectId Id { get; set; }
     public string UserType { get; set; } = null!;
     public string Username { get; set; } = null!;
     public string Password { get; set; } = null!;

@@ -1,5 +1,3 @@
-using MongoDB.Driver;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,7 +15,7 @@ builder.Services.AddCors(options =>
     {
         policy.AllowAnyHeader()
             .AllowAnyMethod()
-            .WithOrigins("http://localhost:4200") // Update this with the actual origin of your Angular app
+            .WithOrigins("http://localhost:4200")
             .AllowCredentials();
     });
     

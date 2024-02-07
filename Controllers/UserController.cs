@@ -1,5 +1,4 @@
 using backend.model;
-using Microsoft.AspNetCore.Mvc;
 
 namespace backend.controllers;
 
@@ -8,9 +7,12 @@ namespace backend.controllers;
 public class UserController : ControllerBase
 {
 
-    public UserController()
+    private readonly IMongoClient _client;
+    private readonly IMongoDatabase _db;
+    public UserController(IMongoClient client)
     {
-
+        _client = client;
+        _db = _client.GetDatabase("Books");
     }
 
     [HttpPost("CreateUser")]
