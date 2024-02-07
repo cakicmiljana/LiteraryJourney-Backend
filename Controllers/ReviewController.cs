@@ -53,4 +53,30 @@ public class ReviewController : ControllerBase
         await _db.GetCollection<Review>("ReviewCollection").DeleteOneAsync(filter);
         return Ok("Review deleted!");
     }
+
+    [HttpGet("GetAllReviews")]
+    public async Task<ActionResult> GetAllReviews()
+    {
+        var reviews = await _db.GetCollection<Review>("ReviewCollection").Find(b => true).ToListAsync();
+        return Ok(reviews);
+    }
+
+    [HttpPost("LeaveReview/{userId}/{themeId}/{rating}/{comment}")]
+    public async Task<ActionResult> LeaveReview(string userId, string themeId, int rating, string comment)
+    {;
+        if (rating < 1 || rating > 5)
+        {
+            return BadRequest("Rating must be between 1 and 5");
+        }
+        Review review = new Review
+        {
+            Id = ObjectId.GenerateNewId(),
+            UserId = userId,
+            ThemeId = themeId,
+            Rating = rating,
+            Comment = comment
+        };
+        await _db.GetCollection<Review>("ReviewCollection").InsertOneAsync(review);
+        return Ok("Review left!");
+    }
 }
