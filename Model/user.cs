@@ -7,6 +7,6 @@ public class User {
     public string Password { get; set; } = null!;
     public string Country { get; set; } = null!;
     public IEnumerable<Theme> Themes { get; set; } = new List<Theme>();
-    public IEnumerable<int> BookPages { get; set; } = new List<int>();
+    public IEnumerable<Book> Books { get; set; } = new List<Book>();
     public IEnumerable<string> Genres { get; set; } = new List<string>();
 }
