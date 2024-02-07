@@ -63,6 +63,5 @@ public class BookController : ControllerBase
         var books = await _db.GetCollection<Book>("BookCollection").FindAsync(b => b.Genres.Contains(genre)).Result.ToListAsync();
         return Ok(books);
     }
-
     
 }

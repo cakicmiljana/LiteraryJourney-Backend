@@ -18,18 +18,44 @@ public class ThemeController : ControllerBase
     [HttpPost("CreateTheme")]
     public async Task<ActionResult> CreateTheme([FromBody] Theme theme)
     {
-        return Ok("Theme created!");
+        theme.Id = ObjectId.GenerateNewId();
+        await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
+        return Ok("Theme created with id " + theme.Id);
     }
 
-    [HttpGet("GetTheme/{id}")]
-    public async Task<ActionResult> GetTheme(int id)
+    [HttpGet("GetThemeById/{id}")]
+    public async Task<ActionResult> GetThemeById(string id)
     {
-        return Ok("Hello from ThemeController!");
+        var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
+        var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(filter).FirstOrDefaultAsync();
+        return Ok(theme);
     }
 
-    [HttpPut("UpdateTheme")]
-    public async Task<ActionResult> UpdateTheme([FromBody] Theme theme)
+    [HttpPut("UpdateThemeDescription/{id}/{description}")]
+    public async Task<ActionResult> UpdateThemeDescription(string id, string description)
     {
-        return Ok("Theme updated!");
+        var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
+        var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(filter).FirstOrDefaultAsync();
+        
+        theme.Description = description;
+        await _db.GetCollection<Theme>("ThemeCollection").ReplaceOneAsync(filter, theme);
+        
+        return Ok("Theme description updated!");
+    }
+
+    [HttpDelete("DeleteTheme/{id}")]
+    public async Task<ActionResult> DeleteTheme(string id)
+    {
+        var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
+        await _db.GetCollection<Theme>("ThemeCollection").DeleteOneAsync(filter);
+        return Ok("Theme deleted!");
+    }
+
+    [HttpGet("GetAllBooksInTheme/{id}")]
+    public async Task<ActionResult> GetAllBooksInTheme(string id)
+    {
+        var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
+        var books = await _db.GetCollection<Theme>("ThemeCollection").Find(filter).FirstOrDefaultAsync();
+        return Ok(books.Books);
     }
 }
