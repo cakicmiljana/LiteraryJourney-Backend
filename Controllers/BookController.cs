@@ -1,5 +1,6 @@
 using backend.model;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 
 namespace backend.controllers;
 
@@ -7,16 +8,22 @@ namespace backend.controllers;
 [Route("[controller]")]
 public class BookController : ControllerBase
 {
+    private readonly IMongoClient _client;
+    private IMongoDatabase _db;
     
-    public BookController()
+    
+    public BookController(IMongoClient client)
     {
-
+        _client = client;
+        _db = _client.GetDatabase("Books");
     }
 
     [HttpPost("CreateBook")]
-    public async Task<ActionResult> CreateBook([FromBody] Book book)
+    public async Task<ActionResult> CreateBook()
     {
-        return Ok("Book created!");
+        List<string> databases = _client.ListDatabaseNames().ToList();
+        var col = await _db.ListCollectionNamesAsync().Result.ToListAsync();
+        return Ok(col);
     }
 
     [HttpGet("GetBook/{id}")]
