@@ -65,4 +65,15 @@ public class UserController : ControllerBase
         var users = await _db.GetCollection<User>("UserCollection").FindAsync(b => true).Result.ToListAsync();
         return Ok(users);
     }
+
+    [HttpPut("ApplyForTheme/{userId}/{themeId}")]
+    public async Task<ActionResult> ApplyForTheme(string userId, string themeId)
+    {
+        var userFilter = Builders<User>.Filter.Eq(u => u.Id, new ObjectId(userId));
+        var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
+        var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(themeFilter).FirstOrDefaultAsync();
+        var updateFilter = Builders<User>.Update.Push<string>(p => p.ThemeIDs, themeId);
+        await _db.GetCollection<User>("UserCollection").UpdateOneAsync(userFilter, updateFilter);
+        return Ok("Applied for theme!");
+    }
 }
