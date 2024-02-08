@@ -8,5 +8,4 @@ public class User {
     public string Country { get; set; } = null!;
     public IEnumerable<string> ThemeIDs { get; set; } = new List<string>();
     public IEnumerable<Book> Books { get; set; } = new List<Book>();
-    public IEnumerable<string> Genres { get; set; } = new List<string>();
 }
