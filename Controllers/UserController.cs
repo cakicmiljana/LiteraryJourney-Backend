@@ -1,5 +1,5 @@
 using backend.model;
-
+using backend.services;
 namespace backend.controllers;
 
 [ApiController]
@@ -9,16 +9,19 @@ public class UserController : ControllerBase
 
     private readonly IMongoClient _client;
     private readonly IMongoDatabase _db;
+    private readonly StatisticsService _statisticsServices;
     public UserController(IMongoClient client)
     {
         _client = client;
         _db = _client.GetDatabase("Books");
+        _statisticsServices = new StatisticsService(_client);
     }
 
     [HttpPost("CreateUser")]
     public async Task<ActionResult> CreateUser([FromBody] User user)
     {
         user.Id = ObjectId.GenerateNewId();
+        user.Statistics = await _statisticsServices.CreateStatistics(user.Id.ToString());
         await _db.GetCollection<User>("UserCollection").InsertOneAsync(user);
         return Ok("User created!" + user.Id);
     }
