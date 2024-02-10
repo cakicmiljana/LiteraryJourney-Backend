@@ -28,7 +28,13 @@ public class ReviewController : ControllerBase
     {
         var filter = Builders<Review>.Filter.Eq(b => b.Id, new ObjectId(id));
         var review = await _db.GetCollection<Review>("ReviewCollection").Find(filter).FirstOrDefaultAsync();
-        return Ok(review);
+        return Ok(new{
+            Id = review.Id.ToString(),
+            review.UserId,
+            review.ThemeId,
+            review.Rating,
+            review.Comment
+        });
     }
 
     [HttpPut("UpdateReview/{id}/{rating}/{comment}")]

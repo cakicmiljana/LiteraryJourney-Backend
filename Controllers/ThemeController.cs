@@ -37,9 +37,25 @@ public class ThemeController : ControllerBase
             theme.Description,
             theme.ImagePath,
             theme.Rating,
-            theme.Books,
+            Books = theme.Books.Select(b=>new{
+                Id = b.Id.ToString(),
+                b.Pages,
+                b.Title,
+                b.Author,
+                b.CoverPath,
+                b.Description,
+                b.ExternalLink,
+                b.Genres,
+                b.Language
+            }).ToList(),
             theme.Genres,
-            theme.Reviews
+            Reviews = theme.Reviews.Select(b=>new{
+                Id = b.Id.ToString(),
+                b.UserId,
+                b.ThemeId,
+                b.Rating,
+                b.Comment
+            }).ToList()
         });
     }
 
@@ -90,9 +106,25 @@ public class ThemeController : ControllerBase
             b.Description,
             b.ImagePath,
             b.Rating,
-            b.Books,
+            Books = b.Books.Select(b=>new{
+                Id = b.Id.ToString(),
+                b.Pages,
+                b.Title,
+                b.Author,
+                b.CoverPath,
+                b.Description,
+                b.ExternalLink,
+                b.Genres,
+                b.Language
+            }).ToList(),
             b.Genres,
-            b.Reviews
+            Reviews = b.Reviews.Select(p=>new{
+                Id = p.Id.ToString(),
+                p.UserId,
+                p.ThemeId,
+                p.Rating,
+                p.Comment
+            }).ToList()
         }).ToList());
     }
 

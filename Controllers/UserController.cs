@@ -46,8 +46,25 @@ public class UserController : ControllerBase
             user.Password,
             user.Country,
             user.ThemeIDs,
-            user.Books,
-            user.Statistics
+            Books = user.Books.Select(b=>new{
+                Id = b.Id.ToString(),
+                b.Pages,
+                b.Title,
+                b.Author,
+                b.CoverPath,
+                b.Description,
+                b.ExternalLink,
+                b.Genres,
+                b.Language
+            }).ToList(),
+            Statistics = new{
+                Id = user.Statistics.Id.ToString(),
+                user.Statistics.UserId,
+                user.Statistics.Genres,
+                user.Statistics.Pages,
+                user.Statistics.Languages,
+                user.Statistics.Authors
+            }
         });
     }
 
@@ -62,8 +79,25 @@ public class UserController : ControllerBase
             user.Password,
             user.Country,
             user.ThemeIDs,
-            user.Books,
-            user.Statistics
+            Books = user.Books.Select(b=>new{
+                Id = b.Id.ToString(),
+                b.Pages,
+                b.Title,
+                b.Author,
+                b.CoverPath,
+                b.Description,
+                b.ExternalLink,
+                b.Genres,
+                b.Language
+            }).ToList(),
+            Statistics = new{
+                Id = user.Statistics.Id.ToString(),
+                user.Statistics.UserId,
+                user.Statistics.Genres,
+                user.Statistics.Pages,
+                user.Statistics.Languages,
+                user.Statistics.Authors
+            }
         });
     }
 
@@ -105,8 +139,25 @@ public class UserController : ControllerBase
             u.Password,
             u.Country,
             u.ThemeIDs,
-            u.Books,
-            u.Statistics
+            Books = u.Books.Select(b=>new{
+                Id = b.Id.ToString(),
+                b.Pages,
+                b.Title,
+                b.Author,
+                b.CoverPath,
+                b.Description,
+                b.ExternalLink,
+                b.Genres,
+                b.Language
+            }).ToList(),
+            Statistics = new{
+                Id = u.Statistics.Id.ToString(),
+                u.Statistics.UserId,
+                u.Statistics.Genres,
+                u.Statistics.Pages,
+                u.Statistics.Languages,
+                u.Statistics.Authors
+            }
         }).ToList());
     }
 
@@ -133,9 +184,25 @@ public class UserController : ControllerBase
             b.Description,
             b.ImagePath,
             b.Rating,
-            b.Books,
+            Books = b.Books.Select(b=>new{
+                Id = b.Id.ToString(),
+                b.Pages,
+                b.Title,
+                b.Author,
+                b.CoverPath,
+                b.Description,
+                b.ExternalLink,
+                b.Genres,
+                b.Language
+            }).ToList(),
             b.Genres,
-            b.Reviews
+            Reviews = b.Reviews.Select(p=>new{
+                Id = p.Id.ToString(),
+                p.UserId,
+                p.ThemeId,
+                p.Rating,
+                p.Comment
+            }).ToList()
         }).ToList());
     }
 
