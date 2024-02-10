@@ -21,15 +21,20 @@ public class ThemeController : ControllerBase
     [HttpPost("CreateTheme")]
     public async Task<ActionResult> CreateTheme([FromBody] Theme theme)
     {
-        theme.Id = ObjectId.GenerateNewId();
+        try{theme.Id = ObjectId.GenerateNewId();
         await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
-        return Ok("Theme created with id " + theme.Id);
+        return Ok("Theme created with id " + theme.Id);}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Theme creation failed!");
+        }
     }
 
     [HttpGet("GetThemeById/{id}")]
     public async Task<ActionResult> GetThemeById(string id)
     {
-        var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
+        try{var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
         var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(filter).FirstOrDefaultAsync();
         return Ok(new {
             Id = theme.Id.ToString(),
@@ -56,33 +61,48 @@ public class ThemeController : ControllerBase
                 b.Rating,
                 b.Comment
             }).ToList()
-        });
+        });}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Theme get failed!");
+        }
     }
 
     [HttpPut("UpdateThemeDescription/{id}/{description}")]
     public async Task<ActionResult> UpdateThemeDescription(string id, string description)
     {
-        var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
+        try{var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
         var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(filter).FirstOrDefaultAsync();
         
         theme.Description = description;
         await _db.GetCollection<Theme>("ThemeCollection").ReplaceOneAsync(filter, theme);
         
-        return Ok("Theme description updated!");
+        return Ok("Theme description updated!");}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Theme description update failed!");
+        }
     }
 
     [HttpDelete("DeleteTheme/{id}")]
     public async Task<ActionResult> DeleteTheme(string id)
     {
-        var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
+        try{var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
         await _db.GetCollection<Theme>("ThemeCollection").DeleteOneAsync(filter);
-        return Ok("Theme deleted!");
+        return Ok("Theme deleted!");}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Delete theme failed!");
+        }
     }
 
     [HttpGet("GetAllBooksInTheme/{id}")]
     public async Task<ActionResult> GetAllBooksInTheme(string id)
     {
-        var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
+        try{var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
         var books = await _db.GetCollection<Theme>("ThemeCollection").Find(filter).FirstOrDefaultAsync();
         return Ok(books.Books.Select(b=>new{
             Id = b.Id.ToString(),
@@ -94,12 +114,17 @@ public class ThemeController : ControllerBase
             b.ExternalLink,
             b.Genres,
             b.Language
-        }).ToList());
+        }).ToList());}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Get books in theme failed!");
+        }
     }
     [HttpGet("GetAllThemes")]
     public async Task<ActionResult> GetAllThemes()
     {
-        var themes = await _db.GetCollection<Theme>("ThemeCollection").Find(_ => true).ToListAsync();
+        try{var themes = await _db.GetCollection<Theme>("ThemeCollection").Find(_ => true).ToListAsync();
         return Ok(themes.Select(b => new {
             Id = b.Id.ToString(),
             b.Title,
@@ -125,14 +150,19 @@ public class ThemeController : ControllerBase
                 p.Rating,
                 p.Comment
             }).ToList()
-        }).ToList());
+        }).ToList());}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Get all themes failed!");
+        }
     }
 
     [HttpPut("AddBookToTheme/{themeId}/{bookId}")]
     public async Task<ActionResult> AddBookToTheme(string themeId, string bookId)
     {
 
-        var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
+        try{var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
         var bookFilter = Builders<Book>.Filter.Eq(b => b.Id, new ObjectId(bookId));
         var book = await _db.GetCollection<Book>("BookCollection").Find(bookFilter).FirstOrDefaultAsync();
         var updateFilter = Builders<Theme>.Update.Push<Book>(p=>p.Books, book);
@@ -140,41 +170,61 @@ public class ThemeController : ControllerBase
 
         await _themeService.AddGenresToTheme(book, themeFilter);
         
-        return Ok("Book added to theme!");
+        return Ok("Book added to theme!");}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Add book to theme failed!");
+        }
     }
 
     [HttpPut("RemoveBookFromTheme/{themeId}/{bookId}")]
     public async Task<ActionResult> RemoveBookFromTheme(string themeId, string bookId)
     {
-        var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
+        try{var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
         var bookFilter = Builders<Book>.Filter.Eq(b => b.Id, new ObjectId(bookId));
         var book = await _db.GetCollection<Book>("BookCollection").Find(bookFilter).FirstOrDefaultAsync();
         var updateFilter = Builders<Theme>.Update.PullFilter(p=>p.Books, bookFilter);
         await _db.GetCollection<Theme>("ThemeCollection").UpdateOneAsync(themeFilter, updateFilter);
-        return Ok("Book removed from theme!");
+        return Ok("Book removed from theme!");}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Remove book from theme failed!");
+        }
     }
 
     // //for existing theme that has books but no genres are added to the theme
     // [HttpPut("AddGenresToTheme/{themeId}")]
     // public async Task<ActionResult> AddGenresToTheme(string themeId)
     // {
-    //     var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(t => t.Id == new ObjectId(themeId)).FirstOrDefaultAsync();
+    //     try{var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(t => t.Id == new ObjectId(themeId)).FirstOrDefaultAsync();
     //     var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
     //     var updateFilter = Builders<Theme>.Update.PushEach<string>(p=>p.Genres, theme.Books.SelectMany(b=>b.Genres).Distinct());
     //     await _db.GetCollection<Theme>("ThemeCollection").UpdateOneAsync(themeFilter, updateFilter);
-    //     return Ok("Genres added to theme!");
+    //     return Ok("Genres added to theme!");}
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine(e);
+    //         return BadRequest("Add genres to theme failed!");
+    //     }
     // }
 
     [HttpGet("GetReviews/{themeId}")]
     public async Task<ActionResult> GetReviews(string themeId)
     {
-        var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(t => t.Id == new ObjectId(themeId)).FirstOrDefaultAsync();
+        try{var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(t => t.Id == new ObjectId(themeId)).FirstOrDefaultAsync();
         return Ok(theme.Reviews.Select(b=>new{
             Id = b.Id.ToString(),
             b.UserId,
             b.ThemeId,
             b.Rating,
             b.Comment
-        }));
+        }));}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Get reviews failed!");
+        }
     }
 }

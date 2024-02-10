@@ -22,7 +22,7 @@ public class RecommendationController : ControllerBase
     [HttpGet("GetRecommendationByLanguage/{userId}")]
     public async Task<ActionResult> GetRecommendationByLanguage(string userId)
     {
-        var statistics = await _statisticsServices.GetStatisticsByUserId(userId);
+        try{var statistics = await _statisticsServices.GetStatisticsByUserId(userId);
         string favouriteLanguage = statistics.Languages.Where(p => p.Value == statistics.Languages.Values.Max()).Select(p => p.Key).FirstOrDefault()!;
         if (string.IsNullOrWhiteSpace(favouriteLanguage))
         {
@@ -40,13 +40,18 @@ public class RecommendationController : ControllerBase
             b.ExternalLink,
             b.Genres,
             b.Language,
-        }).ToList());
+        }).ToList());}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Get recommendation by language failed");
+        }
     }
 
     [HttpGet("GetRecommendationByAuthor/{userId}")]
     public async Task<ActionResult> GetRecommendationByAuthor(string userId)
     {
-        var statistics = await _statisticsServices.GetStatisticsByUserId(userId);
+        try{var statistics = await _statisticsServices.GetStatisticsByUserId(userId);
         string favouriteAuthor = statistics.Authors.Where(p => p.Value == statistics.Authors.Values.Max()).Select(p => p.Key).FirstOrDefault()!;
         if (string.IsNullOrWhiteSpace(favouriteAuthor))
         {
@@ -64,12 +69,17 @@ public class RecommendationController : ControllerBase
             b.ExternalLink,
             b.Genres,
             b.Language,
-        }).ToList());
+        }).ToList());}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Get recommendation by author failed!");
+        }
     }
     [HttpGet("GetRecommendationByGenre/{userId}")]
     public async Task<ActionResult> GetRecommendationByGenre(string userId)
     {
-        var statistics = await _statisticsServices.GetStatisticsByUserId(userId);
+       try{var statistics = await _statisticsServices.GetStatisticsByUserId(userId);
         string favouriteGenre = statistics.Genres.Where(p => p.Value == statistics.Genres.Values.Max()).Select(p => p.Key).FirstOrDefault()!;
         if (string.IsNullOrWhiteSpace(favouriteGenre))
         {
@@ -86,7 +96,12 @@ public class RecommendationController : ControllerBase
             b.ExternalLink,
             b.Genres,
             b.Language,
-        }).ToList());
+        }).ToList());}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Get recommendation by genre failed!");
+        }
     }
 
 }

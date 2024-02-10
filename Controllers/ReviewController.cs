@@ -26,7 +26,7 @@ public class ReviewController : ControllerBase
     [HttpGet("GetReviewById/{id}")]
     public async Task<ActionResult> GetReview(string id)
     {
-        var filter = Builders<Review>.Filter.Eq(b => b.Id, new ObjectId(id));
+        try{var filter = Builders<Review>.Filter.Eq(b => b.Id, new ObjectId(id));
         var review = await _db.GetCollection<Review>("ReviewCollection").Find(filter).FirstOrDefaultAsync();
         return Ok(new{
             Id = review.Id.ToString(),
@@ -34,13 +34,18 @@ public class ReviewController : ControllerBase
             review.ThemeId,
             review.Rating,
             review.Comment
-        });
+        });}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Get review failed!");
+        }
     }
 
     [HttpPut("UpdateReview/{id}/{rating}/{comment}")]
     public async Task<ActionResult> UpdateReview(string id, int rating, string comment)
     {
-        var filter = Builders<Review>.Filter.Eq(b => b.Id, new ObjectId(id));
+        try{var filter = Builders<Review>.Filter.Eq(b => b.Id, new ObjectId(id));
         var review = await _db.GetCollection<Review>("ReviewCollection").Find(filter).FirstOrDefaultAsync();
         if (rating < 1 || rating > 5)
         {
@@ -49,34 +54,49 @@ public class ReviewController : ControllerBase
         review.Rating = rating;
         review.Comment = comment;
         await _db.GetCollection<Review>("ReviewCollection").ReplaceOneAsync(filter, review);
-        return Ok("Review updated!");
+        return Ok("Review updated!");}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Update review failed!");
+        }
     }
 
     [HttpDelete("DeleteReview/{id}")]
     public async Task<ActionResult> DeleteReview(string id)
     {
-        var filter = Builders<Review>.Filter.Eq(b => b.Id, new ObjectId(id));
+        try{var filter = Builders<Review>.Filter.Eq(b => b.Id, new ObjectId(id));
         await _db.GetCollection<Review>("ReviewCollection").DeleteOneAsync(filter);
-        return Ok("Review deleted!");
+        return Ok("Review deleted!");}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Review deletion failed!");
+        }
     }
 
     [HttpGet("GetAllReviews")]
     public async Task<ActionResult> GetAllReviews()
     {
-        var reviews = await _db.GetCollection<Review>("ReviewCollection").Find(b => true).ToListAsync();
+        try{var reviews = await _db.GetCollection<Review>("ReviewCollection").Find(b => true).ToListAsync();
         return Ok(reviews.Select(r => new {
             Id = r.Id.ToString(),
             r.UserId,
             r.ThemeId,
             r.Rating,
             r.Comment
-        }).ToList());
+        }).ToList());}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Get all reviews failed!");
+        }
     }
 
     [HttpPost("LeaveReview/{userId}/{themeId}/{rating}/{comment}")]
     public async Task<ActionResult> LeaveReview(string userId, string themeId, int rating, string comment)
-    {;
-        if (rating < 1 || rating > 5)
+    {
+        try{if (rating < 1 || rating > 5)
         {
             return BadRequest("Rating must be between 1 and 5");
         }
@@ -93,6 +113,11 @@ public class ReviewController : ControllerBase
         var updateFilter = Builders<Theme>.Update.Push(t => t.Reviews, review);
         await _db.GetCollection<Theme>("ThemeCollection").UpdateOneAsync(themeFilter, updateFilter);
         await _db.GetCollection<Review>("ReviewCollection").InsertOneAsync(review);
-        return Ok("Review left!");
+        return Ok("Review left!");}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Leave review failed!");
+        }
     }
 }
