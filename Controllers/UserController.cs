@@ -40,7 +40,15 @@ public class UserController : ControllerBase
         {
             return BadRequest("Wrong password!");
         }
-        return Ok(user.Id.ToString());
+        return Ok(new {
+            Id = user.Id.ToString(),
+            user.Username,
+            user.Password,
+            user.Country,
+            user.ThemeIDs,
+            user.Books,
+            user.Statistics
+        });
     }
 
     [HttpGet("GetUserById/{id}")]
