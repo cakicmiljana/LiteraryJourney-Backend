@@ -56,7 +56,15 @@ public class UserController : ControllerBase
     {
         var filter = Builders<User>.Filter.Eq(b => b.Id, new ObjectId(id));
         var user = await _db.GetCollection<User>("UserCollection").Find(filter).FirstOrDefaultAsync();
-        return Ok(user);
+        return Ok(new {
+            Id = user.Id.ToString(),
+            user.Username,
+            user.Password,
+            user.Country,
+            user.ThemeIDs,
+            user.Books,
+            user.Statistics
+        });
     }
 
     [HttpPut("UpdateUser/{id}/{country}")]
@@ -91,7 +99,15 @@ public class UserController : ControllerBase
     public async Task<ActionResult> GetAllUsers()
     {
         var users = await _db.GetCollection<User>("UserCollection").FindAsync(b => true).Result.ToListAsync();
-        return Ok(users);
+        return Ok(users.Select(u => new {
+            Id = u.Id.ToString(),
+            u.Username,
+            u.Password,
+            u.Country,
+            u.ThemeIDs,
+            u.Books,
+            u.Statistics
+        }).ToList());
     }
 
     [HttpPut("ApplyForTheme/{userId}/{themeId}")]
@@ -111,7 +127,16 @@ public class UserController : ControllerBase
         var userFilter = Builders<User>.Filter.Eq(u => u.Id, new ObjectId(userId));
         var user = await _db.GetCollection<User>("UserCollection").Find(userFilter).FirstOrDefaultAsync();
         var themes = await _db.GetCollection<Theme>("ThemeCollection").Find(t => user.ThemeIDs.Contains(t.Id.ToString())).ToListAsync();
-        return Ok(themes);
+        return Ok(themes.Select(b=>new{
+            Id = b.Id.ToString(),
+            b.Title,
+            b.Description,
+            b.ImagePath,
+            b.Rating,
+            b.Books,
+            b.Genres,
+            b.Reviews
+        }).ToList());
     }
 
     [HttpPut("ReadBook/{userId}/{bookId}")]

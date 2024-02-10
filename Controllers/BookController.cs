@@ -28,7 +28,17 @@ public class BookController : ControllerBase
     {
         var filter = Builders<Book>.Filter.Eq(b => b.Id, new ObjectId(id));
         var book = await _db.GetCollection<Book>("BookCollection").Find(filter).FirstOrDefaultAsync();
-        return Ok(book);
+        return Ok(new {
+            Id = book.Id.ToString(),
+            book.Pages,
+            book.Title,
+            book.Author,
+            book.CoverPath,
+            book.Description,
+            book.ExternalLink,
+            book.Genres,
+            book.Language
+        });
     }
 
     [HttpPut("UpdateBookPagesLanguage/{id}/{pages}/{language}")]
@@ -54,21 +64,51 @@ public class BookController : ControllerBase
     public async Task<ActionResult> GetBookByTitle(string title)
     {
         var book = await _db.GetCollection<Book>("BookCollection").FindAsync(b => b.Title == title).Result.FirstOrDefaultAsync();
-        return Ok(book);
+        return Ok(new {
+            Id = book.Id.ToString(),
+            book.Pages,
+            book.Title,
+            book.Author,
+            book.CoverPath,
+            book.Description,
+            book.ExternalLink,
+            book.Genres,
+            book.Language
+        });
     }
 
     [HttpGet("GetAllBooksByGenre/{genre}")]
     public async Task<ActionResult> GetAllBooksByGenre(string genre)
     {
         var books = await _db.GetCollection<Book>("BookCollection").FindAsync(b => b.Genres.Contains(genre)).Result.ToListAsync();
-        return Ok(books);
+        return Ok(books.Select(b=> new {
+            Id = b.Id.ToString(),
+            b.Pages,
+            b.Title,
+            b.Author,
+            b.CoverPath,
+            b.Description,
+            b.ExternalLink,
+            b.Genres,
+            b.Language,
+        }).ToList());
     }
 
     [HttpGet("GetAllBooks")]
     public async Task<ActionResult> GetAllBooks()
     {
         var books = await _db.GetCollection<Book>("BookCollection").Find(b => true).ToListAsync();
-        return Ok(books);
+        return Ok(books.Select(b=> new {
+            Id = b.Id.ToString(),
+            b.Pages,
+            b.Title,
+            b.Author,
+            b.CoverPath,
+            b.Description,
+            b.ExternalLink,
+            b.Genres,
+            b.Language,
+        }).ToList());
     }
     
 }

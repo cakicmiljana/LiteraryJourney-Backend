@@ -31,7 +31,16 @@ public class ThemeController : ControllerBase
     {
         var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
         var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(filter).FirstOrDefaultAsync();
-        return Ok(theme);
+        return Ok(new {
+            Id = theme.Id.ToString(),
+            theme.Title,
+            theme.Description,
+            theme.ImagePath,
+            theme.Rating,
+            theme.Books,
+            theme.Genres,
+            theme.Reviews
+        });
     }
 
     [HttpPut("UpdateThemeDescription/{id}/{description}")]
@@ -59,13 +68,32 @@ public class ThemeController : ControllerBase
     {
         var filter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(id));
         var books = await _db.GetCollection<Theme>("ThemeCollection").Find(filter).FirstOrDefaultAsync();
-        return Ok(books.Books);
+        return Ok(books.Books.Select(b=>new{
+            Id = b.Id.ToString(),
+            b.Pages,
+            b.Title,
+            b.Author,
+            b.CoverPath,
+            b.Description,
+            b.ExternalLink,
+            b.Genres,
+            b.Language
+        }).ToList());
     }
     [HttpGet("GetAllThemes")]
     public async Task<ActionResult> GetAllThemes()
     {
         var themes = await _db.GetCollection<Theme>("ThemeCollection").Find(_ => true).ToListAsync();
-        return Ok(themes);
+        return Ok(themes.Select(b => new {
+            Id = b.Id.ToString(),
+            b.Title,
+            b.Description,
+            b.ImagePath,
+            b.Rating,
+            b.Books,
+            b.Genres,
+            b.Reviews
+        }).ToList());
     }
 
     [HttpPut("AddBookToTheme/{themeId}/{bookId}")]
@@ -109,6 +137,12 @@ public class ThemeController : ControllerBase
     public async Task<ActionResult> GetReviews(string themeId)
     {
         var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(t => t.Id == new ObjectId(themeId)).FirstOrDefaultAsync();
-        return Ok(theme.Reviews);
+        return Ok(theme.Reviews.Select(b=>new{
+            Id = b.Id.ToString(),
+            b.UserId,
+            b.ThemeId,
+            b.Rating,
+            b.Comment
+        }));
     }
 }

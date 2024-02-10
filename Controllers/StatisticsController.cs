@@ -27,7 +27,14 @@ public class StatisticsController : ControllerBase
     public async Task<ActionResult> GetStatisticsByUserId(string userId)
     {
         Statistics s = await _statisticsService.GetStatisticsByUserId(userId);
-        return Ok(s);
+        return Ok(new{
+            Id = s.Id.ToString(),
+            s.UserId,
+            s.Genres,
+            s.Pages,
+            s.Languages,
+            s.Authors
+        });
     }
 
     [HttpPut("UpdateGenres/{userId}/{genre}")]

@@ -30,7 +30,17 @@ public class RecommendationController : ControllerBase
         }
         var filter = Builders<Book>.Filter.Eq(b => b.Language, favouriteLanguage);
         var books = await _db.GetCollection<Book>("BookCollection").Find(filter).ToListAsync();
-        return Ok(books);
+        return Ok(books.Select(b=> new {
+            Id = b.Id.ToString(),
+            b.Pages,
+            b.Title,
+            b.Author,
+            b.CoverPath,
+            b.Description,
+            b.ExternalLink,
+            b.Genres,
+            b.Language,
+        }).ToList());
     }
 
     [HttpGet("GetRecommendationByAuthor/{userId}")]
@@ -54,7 +64,7 @@ public class RecommendationController : ControllerBase
             b.ExternalLink,
             b.Genres,
             b.Language,
-        }));
+        }).ToList());
     }
     [HttpGet("GetRecommendationByGenre/{userId}")]
     public async Task<ActionResult> GetRecommendationByGenre(string userId)
@@ -66,7 +76,17 @@ public class RecommendationController : ControllerBase
             return BadRequest("User has no favourite genre!");
         }
         var books = await _db.GetCollection<Book>("BookCollection").Find(b=>b.Genres.Contains(favouriteGenre)).ToListAsync();
-        return Ok(books);
+        return Ok(books.Select(b=> new {
+            Id = b.Id.ToString(),
+            b.Pages,
+            b.Title,
+            b.Author,
+            b.CoverPath,
+            b.Description,
+            b.ExternalLink,
+            b.Genres,
+            b.Language,
+        }).ToList());
     }
 
 }

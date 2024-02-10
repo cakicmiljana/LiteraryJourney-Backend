@@ -58,7 +58,13 @@ public class ReviewController : ControllerBase
     public async Task<ActionResult> GetAllReviews()
     {
         var reviews = await _db.GetCollection<Review>("ReviewCollection").Find(b => true).ToListAsync();
-        return Ok(reviews);
+        return Ok(reviews.Select(r => new {
+            Id = r.Id.ToString(),
+            r.UserId,
+            r.ThemeId,
+            r.Rating,
+            r.Comment
+        }).ToList());
     }
 
     [HttpPost("LeaveReview/{userId}/{themeId}/{rating}/{comment}")]
