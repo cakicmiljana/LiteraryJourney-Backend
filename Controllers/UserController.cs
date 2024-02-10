@@ -1,3 +1,4 @@
+using backend.dto;
 using backend.model;
 using backend.services;
 namespace backend.controllers;
@@ -24,6 +25,22 @@ public class UserController : ControllerBase
         user.Statistics = await _statisticsServices.CreateStatistics(user.Id.ToString());
         await _db.GetCollection<User>("UserCollection").InsertOneAsync(user);
         return Ok("User created!" + user.Id);
+    }
+
+    [HttpPost("LoginUser")]
+    public async Task<ActionResult> Login([FromBody] LoginDTO loginUser)
+    {
+        var filter = Builders<User>.Filter.Eq(u => u.Username, loginUser.Username);
+        var user = await _db.GetCollection<User>("UserCollection").Find(filter).FirstOrDefaultAsync();
+        if (user == null)
+        {
+            return BadRequest("User not found!");
+        }
+        if (user.Password != loginUser.Password)
+        {
+            return BadRequest("Wrong password!");
+        }
+        return Ok(user.Id.ToString());
     }
 
     [HttpGet("GetUserById/{id}")]
@@ -78,5 +95,25 @@ public class UserController : ControllerBase
         var updateFilter = Builders<User>.Update.Push<string>(p => p.ThemeIDs, themeId);
         await _db.GetCollection<User>("UserCollection").UpdateOneAsync(userFilter, updateFilter);
         return Ok("Applied for theme!");
+    }
+
+    [HttpGet("GetAllThemesForUser/{userId}")]
+    public async Task<ActionResult> GetAllThemesForUser(string userId)
+    {
+        var userFilter = Builders<User>.Filter.Eq(u => u.Id, new ObjectId(userId));
+        var user = await _db.GetCollection<User>("UserCollection").Find(userFilter).FirstOrDefaultAsync();
+        var themes = await _db.GetCollection<Theme>("ThemeCollection").Find(t => user.ThemeIDs.Contains(t.Id.ToString())).ToListAsync();
+        return Ok(themes);
+    }
+
+    [HttpPut("ReadBook/{userId}/{bookId}")]
+    public async Task<ActionResult> ReadBook(string userId, string bookId)
+    {
+        var userFilter = Builders<User>.Filter.Eq(u => u.Id, new ObjectId(userId));
+        var bookFilter = Builders<Book>.Filter.Eq(b => b.Id, new ObjectId(bookId));
+        var book = await _db.GetCollection<Book>("BookCollection").Find(bookFilter).FirstOrDefaultAsync();
+        var updateFilter = Builders<User>.Update.Push<Book>(p => p.Books, book);
+        await _db.GetCollection<User>("UserCollection").UpdateOneAsync(userFilter, updateFilter);
+        return Ok("Book read!");
     }
 }

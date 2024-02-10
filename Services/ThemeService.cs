@@ -16,10 +16,9 @@ public class ThemeService {
     public async Task AddGenresToTheme(Book book, FilterDefinition<Theme> themeFilter){
 
         var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(themeFilter).FirstOrDefaultAsync();
-        int count = theme.Genres.Count;
-        theme.Genres.UnionWith(book.Genres);
-        if(theme.Genres.Count > count){
-            var updateGenres = Builders<Theme>.Update.PushEach<string>(p=>p.Genres, theme.Genres);
+        var razlika = book.Genres.Except(theme.Genres);
+        if(razlika.Count() > 0){
+            var updateGenres = Builders<Theme>.Update.PushEach<string>(p=>p.Genres, razlika);
             await _db.GetCollection<Theme>("ThemeCollection").UpdateOneAsync(themeFilter, updateGenres);
         }
     }
