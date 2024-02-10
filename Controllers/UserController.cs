@@ -200,6 +200,11 @@ public class UserController : ControllerBase
     public async Task<ActionResult> ApplyForTheme(string userId, string themeId)
     {
         try{var userFilter = Builders<User>.Filter.Eq(u => u.Id, new ObjectId(userId));
+        var user = await _db.GetCollection<User>("UserCollection").Find(userFilter).FirstOrDefaultAsync();
+        if (user.ThemeIDs.Contains(themeId))
+        {
+            return BadRequest("User already applied for theme!");
+        }
         var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
         var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(themeFilter).FirstOrDefaultAsync();
         var updateFilter = Builders<User>.Update.Push<string>(p => p.ThemeIDs, themeId);
@@ -255,6 +260,11 @@ public class UserController : ControllerBase
     public async Task<ActionResult> ReadBook(string userId, string bookId)
     {
         try{var userFilter = Builders<User>.Filter.Eq(u => u.Id, new ObjectId(userId));
+        var user = await _db.GetCollection<User>("UserCollection").Find(userFilter).FirstOrDefaultAsync();
+        if (user.Books.Any(b => b.Id.ToString() == bookId))
+        {
+            return BadRequest("User already read book!");
+        }
         var bookFilter = Builders<Book>.Filter.Eq(b => b.Id, new ObjectId(bookId));
         var book = await _db.GetCollection<Book>("BookCollection").Find(bookFilter).FirstOrDefaultAsync();
         var updateFilter = Builders<User>.Update.Push<Book>(p => p.Books, book);
