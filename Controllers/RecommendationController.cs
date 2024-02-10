@@ -23,7 +23,7 @@ public class RecommendationController : ControllerBase
     public async Task<ActionResult> GetRecommendationByLanguage(string userId)
     {
         var statistics = await _statisticsServices.GetStatisticsByUserId(userId);
-        string favouriteLanguage = statistics.Languages.Where(p => p.Value == statistics.Languages.Values.Max()).Select(p => p.Key).FirstOrDefault();
+        string favouriteLanguage = statistics.Languages.Where(p => p.Value == statistics.Languages.Values.Max()).Select(p => p.Key).FirstOrDefault()!;
         if (string.IsNullOrWhiteSpace(favouriteLanguage))
         {
             return BadRequest("User has no favourite language!");
@@ -47,7 +47,7 @@ public class RecommendationController : ControllerBase
     public async Task<ActionResult> GetRecommendationByAuthor(string userId)
     {
         var statistics = await _statisticsServices.GetStatisticsByUserId(userId);
-        string favouriteAuthor = statistics.Authors.Where(p => p.Value == statistics.Authors.Values.Max()).Select(p => p.Key).FirstOrDefault();
+        string favouriteAuthor = statistics.Authors.Where(p => p.Value == statistics.Authors.Values.Max()).Select(p => p.Key).FirstOrDefault()!;
         if (string.IsNullOrWhiteSpace(favouriteAuthor))
         {
             return BadRequest("User has no favourite author!");
@@ -70,7 +70,7 @@ public class RecommendationController : ControllerBase
     public async Task<ActionResult> GetRecommendationByGenre(string userId)
     {
         var statistics = await _statisticsServices.GetStatisticsByUserId(userId);
-        string favouriteGenre = statistics.Genres.Where(p => p.Value == statistics.Genres.Values.Max()).Select(p => p.Key).FirstOrDefault();
+        string favouriteGenre = statistics.Genres.Where(p => p.Value == statistics.Genres.Values.Max()).Select(p => p.Key).FirstOrDefault()!;
         if (string.IsNullOrWhiteSpace(favouriteGenre))
         {
             return BadRequest("User has no favourite genre!");
