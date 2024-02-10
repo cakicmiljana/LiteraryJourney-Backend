@@ -10,6 +10,6 @@ public class Theme
     public string ImagePath { get; set; } = null!;
     public decimal? Rating { get; set; } 
     public IEnumerable<Book> Books { get; set; } = new List<Book>();
-    public IEnumerable<string> Genres { get; set; } = new List<string>();
+    public HashSet<string> Genres { get; set; } = new HashSet<string>();
     public IEnumerable<Review> Reviews { get; set; } = new List<Review>();
 }
