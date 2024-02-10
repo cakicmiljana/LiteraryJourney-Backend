@@ -88,6 +88,10 @@ public class ReviewController : ControllerBase
             Rating = rating,
             Comment = comment
         };
+        var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
+        
+        var updateFilter = Builders<Theme>.Update.Push(t => t.Reviews, review);
+        await _db.GetCollection<Theme>("ThemeCollection").UpdateOneAsync(themeFilter, updateFilter);
         await _db.GetCollection<Review>("ReviewCollection").InsertOneAsync(review);
         return Ok("Review left!");
     }
