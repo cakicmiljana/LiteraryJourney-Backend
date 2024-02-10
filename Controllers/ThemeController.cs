@@ -94,7 +94,7 @@ public class ThemeController : ControllerBase
         return Ok("Book removed from theme!");
     }
 
-    // for existing theme that has books but no genres are added to the theme
+    // //for existing theme that has books but no genres are added to the theme
     // [HttpPut("AddGenresToTheme/{themeId}")]
     // public async Task<ActionResult> AddGenresToTheme(string themeId)
     // {
