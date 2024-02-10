@@ -2,7 +2,8 @@ namespace backend.model;
 
 public class Statistics
 {
-    public ObjectId UserId { get; set; }
+    public ObjectId Id { get; set; }
+    public string? UserId { get; set; }
     public Dictionary<string, int> Genres { get; set; } = new Dictionary<string, int>();
     public Dictionary<string, int> Pages { get; set; } = new Dictionary<string, int>();
     public Dictionary<string, int> Authors { get; set; } = new Dictionary<string, int>();
@@ -16,7 +17,7 @@ public class Statistics
     }
     public Statistics(string userId)
     {
-        UserId = new ObjectId(userId);
+        UserId = userId;
         Pages.Add("0-200", 0);
         Pages.Add("200-400", 0);
         Pages.Add("400-700", 0);

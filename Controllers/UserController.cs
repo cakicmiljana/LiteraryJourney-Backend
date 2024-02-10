@@ -113,6 +113,7 @@ public class UserController : ControllerBase
         var bookFilter = Builders<Book>.Filter.Eq(b => b.Id, new ObjectId(bookId));
         var book = await _db.GetCollection<Book>("BookCollection").Find(bookFilter).FirstOrDefaultAsync();
         var updateFilter = Builders<User>.Update.Push<Book>(p => p.Books, book);
+        await _statisticsServices.UpdateStatistics(userId, book.Genres, book.Pages, book.Language, book.Author);
         await _db.GetCollection<User>("UserCollection").UpdateOneAsync(userFilter, updateFilter);
         return Ok("Book read!");
     }

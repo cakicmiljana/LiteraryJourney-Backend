@@ -59,53 +59,9 @@ public class StatisticsController : ControllerBase
     }
 
     [HttpPut("UpdateStatistics/{userId}/{genre}/{pages}/{language}/{author}")]
-    public async Task<ActionResult> UpdateStatistics(string userId, string genre, int pages, string language, string author)
+    public async Task<ActionResult> UpdateStatistics(string userId, IEnumerable<string> genres, int pages, string language, string author)
     {
-        var filter = Builders<Statistics>.Filter.Eq(s => s.UserId, new ObjectId(userId));
-        var statistics = await _db.GetCollection<Statistics>("StatisticsCollection").Find(filter).FirstOrDefaultAsync();
-        if (statistics.Genres.ContainsKey(genre))
-        {
-            statistics.Genres[genre]++;
-        }
-        else
-        {
-            statistics.Genres.Add(genre, 1);
-        }
-        if (pages<200)
-        {
-            statistics.Pages["0-200"]++;
-        }
-        else if (pages<400)
-        {
-            statistics.Pages["200-400"]++;
-        }
-        else if (pages<700)
-        {
-            statistics.Pages["400-700"]++;
-        }
-        else
-        {
-            statistics.Pages["700+"]++;
-        }
-
-        if (statistics.Languages.ContainsKey(language))
-        {
-            statistics.Languages[language]++;
-        }
-        else
-        {
-            statistics.Languages.Add(language, 1);
-        }
-
-        if (statistics.Authors.ContainsKey(author))
-        {
-            statistics.Authors[author]++;
-        }
-        else
-        {
-            statistics.Authors.Add(author, 1);
-        }
-        await _db.GetCollection<Statistics>("StatisticsCollection").ReplaceOneAsync(filter, statistics);
+        await _statisticsService.UpdateStatistics(userId, genres, pages, language, author);
         return Ok("Statistics updated!");
     }
 
