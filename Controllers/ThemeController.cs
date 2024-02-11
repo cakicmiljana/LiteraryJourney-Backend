@@ -31,6 +31,25 @@ public class ThemeController : ControllerBase
         }
     }
 
+    [HttpPost("CreateTheme/{title}/{description}/{imagePath}")]
+    public async Task<ActionResult> CreateTheme(string title, string description, string imagePath)
+    {
+        try{var theme = new Theme
+        {
+            Id = ObjectId.GenerateNewId(),
+            Title = title,
+            Description = description,
+            ImagePath = imagePath
+        };
+        await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
+        return Ok("Theme created with id " + theme.Id);}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Theme creation failed!");
+        }
+    }
+
     [HttpGet("GetThemeById/{id}")]
     public async Task<ActionResult> GetThemeById(string id)
     {
