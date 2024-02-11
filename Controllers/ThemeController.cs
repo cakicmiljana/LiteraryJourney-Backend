@@ -23,7 +23,7 @@ public class ThemeController : ControllerBase
     {
         try{theme.Id = ObjectId.GenerateNewId();
         await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
-        return Ok("Theme created with id " + theme.Id);}
+        return Ok(theme.Id.ToString());}
         catch (Exception e)
         {
             Console.WriteLine(e);
@@ -42,7 +42,7 @@ public class ThemeController : ControllerBase
             ImagePath = imagePath
         };
         await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
-        return Ok("Theme created with id " + theme.Id);}
+        return Ok(theme.Id.ToString());}
         catch (Exception e)
         {
             Console.WriteLine(e);
