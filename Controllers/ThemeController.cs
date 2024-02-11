@@ -1,3 +1,4 @@
+using backend.dto;
 using backend.model;
 using backend.services;
 
@@ -41,6 +42,40 @@ public class ThemeController : ControllerBase
             Description = description,
             ImagePath = imagePath
         };
+        await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
+        return Ok(theme.Id.ToString());}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Theme creation failed!");
+        }
+    }
+
+    [HttpPost("CreateThemeWithBooks/{title}/{description}/{imagePath}")]
+    public async Task<ActionResult> CreateThemeWithBooks(string title, string description, string imagePath, [FromBody] List<BookDTO> books)
+    {
+        try{var theme = new Theme
+        {
+            Id = ObjectId.GenerateNewId(),
+            Title = title,
+            Description = description,
+            ImagePath = imagePath
+        };
+        foreach (var book in books)
+        {
+            // theme.Books.Add(new Book
+            // {
+            //     Id = ObjectId.GenerateNewId(),
+            //     Pages = book.Pages,
+            //     Title = book.Title,
+            //     Author = book.Author,
+            //     CoverPath = book.CoverPath,
+            //     Description = book.Description,
+            //     ExternalLink = book.ExternalLink,
+            //     Genres = book.Genres,
+            //     Language = book.Language
+            // });
+        }
         await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
         return Ok(theme.Id.ToString());}
         catch (Exception e)
