@@ -169,7 +169,7 @@ public class ThemeController : ControllerBase
                 p.Rating,
                 p.Comment
             }).ToList()
-        }).ToList());}
+        }).ToList().ToJson());}
         catch (Exception e)
         {
             Console.WriteLine(e);
