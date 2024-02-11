@@ -21,7 +21,12 @@ public class UserController : ControllerBase
     [HttpPost("CreateUser")]
     public async Task<ActionResult> CreateUser([FromBody] User user)
     {
-        try{user.Id = ObjectId.GenerateNewId();
+        try{var existingUser = await _db.GetCollection<User>("UserCollection").Find(u => u.Username == user.Username).FirstOrDefaultAsync();
+        if (existingUser != null)
+        {
+            return BadRequest("User already exists!");
+        }    
+        user.Id = ObjectId.GenerateNewId();
         user.Statistics = await _statisticsServices.CreateStatistics(user.Id.ToString());
         await _db.GetCollection<User>("UserCollection").InsertOneAsync(user);
         return Ok("User created!" + user.Id);}
