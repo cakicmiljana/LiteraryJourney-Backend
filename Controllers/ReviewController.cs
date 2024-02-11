@@ -109,9 +109,15 @@ public class ReviewController : ControllerBase
             Comment = comment
         };
         var themeFilter = Builders<Theme>.Filter.Eq(t => t.Id, new ObjectId(themeId));
-        
         var updateFilter = Builders<Theme>.Update.Push(t => t.Reviews, review);
         await _db.GetCollection<Theme>("ThemeCollection").UpdateOneAsync(themeFilter, updateFilter);
+
+        var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(themeFilter).FirstOrDefaultAsync();
+        double themeRating = theme.Reviews.Select(r => r.Rating).Average();
+        theme.Rating = (decimal)themeRating;
+        var updateRatingFilter = Builders<Theme>.Update.Set(t => t.Rating, theme.Rating);
+        await _db.GetCollection<Theme>("ThemeCollection").UpdateOneAsync(themeFilter, updateRatingFilter);
+
         await _db.GetCollection<Review>("ReviewCollection").InsertOneAsync(review);
         return Ok("Review left!");}
         catch (Exception e)
