@@ -24,7 +24,7 @@ public class ThemeController : ControllerBase
     {
         try{theme.Id = ObjectId.GenerateNewId();
         await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
-        return Ok(theme.Id.ToString());}
+        return Ok(new{response = theme.Id.ToString()});}
         catch (Exception e)
         {
             Console.WriteLine(e);
@@ -43,7 +43,7 @@ public class ThemeController : ControllerBase
             ImagePath = imagePath
         };
         await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
-        return Ok(theme.Id.ToString());}
+        return Ok(new{response = theme.Id.ToString()});}
         catch (Exception e)
         {
             Console.WriteLine(e);
@@ -61,22 +61,8 @@ public class ThemeController : ControllerBase
             Description = description,
             ImagePath = imagePath
         };
-        foreach (var book in books)
-        {
-            // theme.Books.Add(new Book
-            // {
-            //     Id = ObjectId.GenerateNewId(),
-            //     Pages = book.Pages,
-            //     Title = book.Title,
-            //     Author = book.Author,
-            //     CoverPath = book.CoverPath,
-            //     Description = book.Description,
-            //     ExternalLink = book.ExternalLink,
-            //     Genres = book.Genres,
-            //     Language = book.Language
-            // });
-        }
-        await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
+        // var updateFilter = Builders<Theme>.Update.PushEach<Book>(p=>p.Books, _db.GetCollection<Book>("BookCollection").Find(b=>books.Select(b=>b.Id).Contains(b.Id)).ToList());
+        // await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
         return Ok(theme.Id.ToString());}
         catch (Exception e)
         {
