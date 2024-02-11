@@ -43,7 +43,7 @@ public class ThemeController : ControllerBase
             ImagePath = imagePath
         };
         await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
-        return Ok(new{response = theme.Id.ToString()});}
+        return Ok(theme.Id.ToString().ToJson());}
         catch (Exception e)
         {
             Console.WriteLine(e);
@@ -61,13 +61,25 @@ public class ThemeController : ControllerBase
             Description = description,
             ImagePath = imagePath
         };
-        // var updateFilter = Builders<Theme>.Update.PushEach<Book>(p=>p.Books, _db.GetCollection<Book>("BookCollection").Find(b=>books.Select(b=>b.Id).Contains(b.Id)).ToList());
-        // await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
+        // var updateFilter = Builders<Theme>.Update.PushEach<Book>(p=>p.Books, _db.GetCollection<Book>("BookCollection").Find(b=>books.Select(b=>b.Id)).ToList());
+        await _db.GetCollection<Theme>("ThemeCollection").InsertOneAsync(theme);
         return Ok(theme.Id.ToString());}
         catch (Exception e)
         {
             Console.WriteLine(e);
             return BadRequest("Theme creation failed!");
+        }
+    }
+
+    [HttpGet("GetLastCreatedTheme")]
+    public async Task<ActionResult> GetLastCreatedTheme()
+    {
+        try{var theme = await _db.GetCollection<Theme>("ThemeCollection").Find(_ => true).SortByDescending(t=>t.Id).FirstOrDefaultAsync();
+        return Ok(theme.Id.ToString());}
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Get last created theme failed!");
         }
     }
 
