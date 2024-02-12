@@ -96,7 +96,7 @@ public class RecommendationController : ControllerBase
             b.ExternalLink,
             b.Genres,
             b.Language,
-        }).ToList());}
+        }).Take(6).ToList());}
         catch (Exception e)
         {
             Console.WriteLine(e);
