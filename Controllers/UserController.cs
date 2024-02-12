@@ -70,7 +70,7 @@ public class UserController : ControllerBase
             Statistics = new{
                 Id = user.Statistics.Id.ToString(),
                 user.Statistics.UserId,
-                user.Statistics.Genres,
+                Genres = user.Statistics.Genres.OrderByDescending(g => g.Value).Take(5).ToDictionary(p => p.Key, p => p.Value),
                 user.Statistics.Pages,
                 user.Statistics.Languages,
                 user.Statistics.Authors
